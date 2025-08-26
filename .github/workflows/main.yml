@@ -1,0 +1,28 @@
+name: ci-cd
+on: { push: { branches: [ "main" ] }, workflow_dispatch: {} }
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Package Lambda
+        working-directory: lambda/ingest
+        run: |
+          pip install -r requirements.txt -t .
+          cd ../..
+          zip -r lambda/ingest.zip lambda/ingest
+      - uses: aws-actions/configure-aws-credentials@v4
+        with: { aws-region: us-east-1, role-to-assume: ${{ secrets.AWS_ROLE_OIDC }} }
+      - uses: hashicorp/setup-terraform@v3
+      - name: Terraform Init
+        working-directory: iac/terraform
+        run: terraform init
+      - name: Terraform Plan
+        working-directory: iac/terraform
+        run: terraform plan -out=tfplan
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        working-directory: iac/terraform
+        run: terraform apply -auto-approve tfplan
