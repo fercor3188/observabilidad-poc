@@ -1,0 +1,18 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "type":"object",
+  "required":["timestamp","service_name","endpoint","status_code","trace_id","business_process"],
+  "properties":{
+    "timestamp":{"type":"string"},
+    "service_name":{"type":"string"},
+    "endpoint":{"type":"string"},
+    "status_code":{"type":"integer"},
+    "trace_id":{"type":"string"},
+    "business_process":{"type":"string"},
+    "latency_ms":{"type":"number"},
+    "error_class":{"type":"string"},
+    "client_type":{"type":"string"},
+    "retry_count":{"type":"integer"},
+    "network_type":{"type":"string"}
+  }
+}
